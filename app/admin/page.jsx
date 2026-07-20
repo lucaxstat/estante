@@ -8,11 +8,16 @@ export default function Admin() {
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState('');
 
-  // Verifica a senha (senha super simples para projetos de estudo)
+  // Verifica a senha usando a variável de ambiente segura
   const tentarLogin = (e) => {
     e.preventDefault();
-    if (senha === 'estudante123') setAutenticado(true);
-    else alert('Senha Incorreta!');
+    const senhaCorreta = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
+    if (senha === senhaCorreta) {
+      setAutenticado(true);
+    } else {
+      alert('Senha Incorreta!');
+    }
   };
 
   // Função que chama o Python e depois salva no Supabase
