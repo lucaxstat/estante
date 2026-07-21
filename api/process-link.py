@@ -30,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
 
             # 4. Acorda a Inteligência Artificial do Gemini
             genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
-            model = genai.GenerativeModel('gemini-1.5-flash-latest') 
+            model = genai.GenerativeModel('gemini-pro')
 
             # 5. O Comando (Prompt) que enviamos para a IA
             prompt = f"""
