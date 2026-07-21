@@ -29,7 +29,7 @@ export default function BuscaPage() {
 
   useEffect(() => { fazerBusca(); }, []);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await fazerBusca(busca);
   };
