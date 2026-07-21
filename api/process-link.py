@@ -7,19 +7,19 @@ from http.server import BaseHTTPRequestHandler
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
-            # 1. Lê a URL
+            # 1. Lê a URL enviada pelo site
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
             dados = json.loads(post_data)
             url_do_drive = dados.get('url', '')
 
-            # 2. Extrai a ID do documento
+            # 2. Extrai a ID do documento do Google Docs
             match = re.search(r"/d/([a-zA-Z0-9-_]+)", url_do_drive)
             if not match:
                 raise Exception("Link inválido. Cole a URL de um documento do Google Docs.")
             doc_id = match.group(1)
 
-            # 3. Baixa o texto puro
+            # 3. Baixa o texto puro do documento
             export_url = f"https://docs.google.com/document/d/{doc_id}/export?format=txt"
             req_doc = requests.get(export_url)
             if req_doc.status_code != 200:
@@ -27,19 +27,10 @@ class handler(BaseHTTPRequestHandler):
             
             texto_documento = req_doc.text
 
-            # 4. VERIFICAÇÃO DETETIVE (Checando as Chaves)
-            api_key = os.environ.get('GEMINI_API_KEY')
-            drive_key = os.environ.get('GOOGLE_DRIVE_API_KEY')
-            
-            if not api_key:
-                raise Exception("A chave GEMINI_API_KEY não foi encontrada na Vercel.")
-            if api_key == drive_key:
-                raise Exception("🕵️ DETETIVE: A sua chave do Gemini está IDÊNTICA à do Drive! Vá na Vercel, apague a GEMINI_API_KEY e cole a chave correta gerada no AI Studio.")
-
-            # 5. O Comando (Prompt)
+            # 4. Configura o Prompt para a Inteligência Artificial
             prompt = f"""
             Você é um assistente acadêmico. Analise o texto abaixo e extraia as informações no exato formato JSON.
-            Não escreva mais nada.
+            Não escreva mais nada, apenas o JSON puro, sem crases de formatação.
             Formato obrigatório:
             {{
                 "titulo": "Título principal do documento",
@@ -47,36 +38,40 @@ class handler(BaseHTTPRequestHandler):
                 "tags": ["Tag1", "Tag2", "Tag3"]
             }}
             Texto a ser analisado:
-            {texto_documento[:30000]}
+            {texto_documento[:20000]}
             """
 
-            # 6. Comunicação com a IA
-            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-            payload = {"contents": [{"parts": [{"text": prompt}]}]}
-            req_ia = requests.post(gemini_url, headers={"Content-Type": "application/json"}, json=payload)
+            # 5. Comunicação com a API da OpenAI (GPT-4o-mini)
+            api_key = os.environ.get('OPENAI_API_KEY')
+            if not api_key:
+                raise Exception("A chave OPENAI_API_KEY não foi encontrada na Vercel.")
+
+            openai_url = "https://api.openai.com/v1/chat/completions"
+            payload = {
+                "model": "gpt-4o-mini",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.3
+            }
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+
+            req_ia = requests.post(openai_url, headers=headers, json=payload)
             dados_ia = req_ia.json()
 
-            # 7. O Raio-X do Erro
+            # Trata erros caso a OpenAI retorne algum aviso
             if "error" in dados_ia:
-                # Se der erro, o código vai tentar descobrir quais IAs estão liberadas para você
-                list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-                try:
-                    req_list = requests.get(list_url).json()
-                    modelos = [m['name'].replace('models/', '') for m in req_list.get('models', [])]
-                    msg_modelos = f"Modelos permitidos: {', '.join(modelos[:3])}..." if modelos else "NENHUM modelo de IA encontrado para esta chave!"
-                except:
-                    msg_modelos = "A chave foi totalmente bloqueada."
-                
-                raise Exception(f"Erro na IA: {dados_ia['error'].get('message', '')} | 🔎 {msg_modelos}")
+                raise Exception(f"Erro na OpenAI: {dados_ia['error'].get('message', 'Erro desconhecido')}")
 
-            # 8. Extrai a resposta limpa
-            texto_resposta = dados_ia['candidates'][0]['content']['parts'][0]['text']
+            # 6. Extrai e limpa a resposta do GPT
+            texto_resposta = dados_ia['choices'][0]['message']['content']
             texto_limpo = texto_resposta.replace("```json", "").replace("```", "").strip()
             
             resultado_json = json.loads(texto_limpo)
             resultado_json["sucesso"] = True
 
-            # 9. Devolve para o site
+            # 7. Devolve o resultado em JSON para o site
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
