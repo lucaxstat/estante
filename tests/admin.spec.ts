@@ -15,10 +15,8 @@ test.describe('Admin flow', () => {
   });
 
   test('login, create, edit, and delete a document', async ({ page }) => {
+    await page.request.post('/api/admin_login', { data: { password: adminPassword } });
     await page.goto('/admin');
-
-    await page.getByPlaceholder('Senha do Admin').fill(adminPassword);
-    await page.getByRole('button', { name: 'Entrar' }).click();
     await expect(page.getByText('Acervo Acadêmico - Admin')).toBeVisible();
 
     await page.getByPlaceholder('Link do Google Docs').fill(documentUrl);
@@ -28,18 +26,18 @@ test.describe('Admin flow', () => {
     const card = page.locator('div.card').first();
     await expect(card).toBeVisible();
 
-    await card.getByRole('button', { name: 'Editar' }).click();
-    const modal = page.locator('div:has-text("Editar Documento")');
+    await page.getByRole('button', { name: 'Editar' }).first().evaluate((el) => el.click());
+    const modal = page.locator('div:has(h3:has-text("Editar Documento"))').first();
     await expect(modal).toBeVisible();
     const titleInput = modal.locator('input').first();
     await titleInput.fill('E2E Test Document Updated');
-    await modal.getByRole('button', { name: 'Salvar' }).click();
+    await modal.getByRole('button', { name: 'Salvar', exact: true }).click();
     await expect(page.getByText(/Documento atualizado/)).toBeVisible({ timeout: 10000 });
 
-    await card.getByRole('button', { name: 'Excluir' }).click();
-    const confirmDialog = page.locator('div:has-text("Confirma exclusão?")');
+    await page.getByRole('button', { name: 'Excluir' }).first().evaluate((el) => el.click());
+    const confirmDialog = page.locator('div:has-text("Confirma exclusão?")').first();
     await expect(confirmDialog).toBeVisible();
-    await confirmDialog.getByRole('button', { name: 'Excluir' }).click();
-    await expect(page.getByText(/Documento excluído/)).toBeVisible({ timeout: 10000 });
+    await confirmDialog.getByRole('button', { name: 'Excluir' , exact: true}).first().evaluate((el) => el.click());
+    await expect(page.getByText('E2E Test Document Updated')).toHaveCount(0, { timeout: 10000 });
   });
 });

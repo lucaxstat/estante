@@ -81,7 +81,8 @@ export default function BuscaPage() {
         </div>
 
         <footer className="mt-16 border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} StatContext. Plataforma desenvolvida por @dyinghawks.</p>
+          <p>© 2026 StatViva. Plataforma desenvolvida por @StatViva.</p>
+          <p className="mt-2">Contato: <a href="mailto:hello.statviva@gmail.com" className="text-blue-600 hover:underline">hello.statviva@gmail.com</a></p>
         </footer>
       </div>
     </main>

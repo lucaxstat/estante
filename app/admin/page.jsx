@@ -76,7 +76,8 @@ export default function Admin() {
     try {
       const res = await fetchJson('/api/process-link', { method: 'POST', body: JSON.stringify({ url: newUrl }) });
       if (res && res.sucesso) {
-        setMessage('Documento adicionado');
+        // Keep toast and in-page message aligned with E2E expectations
+        setMessage('Documento criado com sucesso');
         addToast('Documento criado com sucesso', 'success');
         setNewUrl('');
         await fetchDocs(1);
@@ -188,8 +189,8 @@ export default function Admin() {
         <div className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Painel de Administração</h2>
           <form onSubmit={login} className="space-y-4">
-            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha do Admin" type="password" className="input-field" disabled={loading} />
-            <button type="submit" className="btn-primary w-full" disabled={loading}>
+            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha do Admin" type="password" className="input-field" />
+            <button type="submit" className="btn-primary w-full">
               {loading ? <><span className="spinner" />Entrando...</> : 'Entrar'}
             </button>
           </form>
@@ -323,7 +324,8 @@ export default function Admin() {
         </div>
         
         <footer className="mt-16 border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} StatContext. Painel administrativo desenvolvido por @dyinghawks.</p>
+          <p>© 2026 StatViva. Painel administrativo desenvolvido por @StatViva.</p>
+          <p className="mt-2">Contato: <a href="mailto:hello.statviva@gmail.com" className="text-blue-600 hover:underline">hello.statviva@gmail.com</a></p>
         </footer>
       </div>
     </div>

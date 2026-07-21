@@ -2,41 +2,41 @@
 
 /* Theme tokens */
 :root {
-  --bg: 255 255 255; /* light RGB */
-  --fg: 17 17 17;
-  --muted: 99 102 241; /* accent fallback */
-  --burnt-50: 255 247 237;
-  --burnt-100: 255 237 217;
-  --burnt-500: 204 102 0;
-  --card-rgb: 255 255 255;
-  --glass: 255 255 255;
-  --shadow: 0 10px 30px rgba(2,6,23,0.08);
+  --bg: 255 250 242; /* warm paper tone */
+  --fg: 34 30 25; /* softer dark brown for comfortable reading */
+  --muted: 153 102 51; /* soft accent */
+  --burnt-50: 255 250 240;
+  --burnt-100: 255 243 229;
+  --burnt-500: 189 124 44; /* burnt yellow/brown */
+  --card-rgb: 255 253 248;
+  --glass: 255 253 248;
+  --shadow: 0 8px 20px rgba(34,30,25,0.06);
 }
 
 /* Dark theme variables */
 :root.theme-dark {
-  --bg: 9 10 11;
-  --fg: 237 237 237;
-  --muted: 250 204 21;
-  --burnt-50: 18 18 18;
-  --burnt-100: 28 28 28;
-  --burnt-500: 255 179 64;
-  --card-rgb: 12 12 12;
-  --glass: 24 24 24;
+  --bg: 18 16 14; /* dark warm background */
+  --fg: 236 230 221; /* warm off-white text */
+  --muted: 210 170 110;
+  --burnt-50: 28 26 24;
+  --burnt-100: 36 34 32;
+  --burnt-500: 210 140 60;
+  --card-rgb: 24 22 20;
+  --glass: 28 26 24;
   --shadow: 0 8px 24px rgba(0,0,0,0.6);
 }
 
 /* Light theme override class */
 :root.theme-light {
-  --bg: 255 255 255;
-  --fg: 17 17 17;
-  --muted: 99 102 241;
-  --burnt-50: 255 247 237;
-  --burnt-100: 255 237 217;
-  --burnt-500: 204 102 0;
-  --card-rgb: 255 255 255;
-  --glass: 255 255 255;
-  --shadow: 0 10px 30px rgba(2,6,23,0.08);
+  --bg: 255 250 242;
+  --fg: 34 30 25;
+  --muted: 153 102 51;
+  --burnt-50: 255 250 240;
+  --burnt-100: 255 243 229;
+  --burnt-500: 189 124 44;
+  --card-rgb: 255 253 248;
+  --glass: 255 253 248;
+  --shadow: 0 8px 20px rgba(34,30,25,0.06);
 }
 
 /* Base styles using tokens */
@@ -56,8 +56,8 @@ html, body {
 .card:hover { transform: translateY(-4px); }
 
 .btn-primary {
-  background: linear-gradient(90deg, rgba(var(--burnt-500),1), rgba(255,180,80,1));
-  color: white;
+  background: linear-gradient(90deg, rgba(var(--burnt-500),1), rgba(240,200,150,1));
+  color: rgb(255,255,255);
   padding: 0.6rem 1rem;
   border-radius: 0.75rem;
   transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease, background-color 120ms ease;
@@ -80,14 +80,14 @@ html, body {
   width: 100%;
   padding: 0.95rem 1rem;
   border-radius: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(var(--card-rgb) / 0.96);
+  border: 1px solid rgba(34,30,25,0.08);
+  background: rgba(var(--card-rgb) / 0.98);
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 .input-field:focus {
   outline: none;
-  border-color: rgba(var(--burnt-500), 0.9);
-  box-shadow: 0 0 0 4px rgba(var(--burnt-500), 0.12);
+  border-color: rgba(var(--burnt-500), 0.85);
+  box-shadow: 0 0 0 6px rgba(var(--burnt-500), 0.08);
   transform: translateY(-1px);
 }
 .input-field:disabled {
@@ -113,7 +113,7 @@ html, body {
   padding: 0.18rem 0.5rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  background: rgba(255, 236, 209, 0.6);
+  background: rgba(245,238,226,0.7);
   color: rgb(var(--burnt-500));
 }
 
