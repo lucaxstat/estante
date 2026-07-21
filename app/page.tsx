@@ -1,71 +1,88 @@
-'use client'; 
+'use client';
 import { useState, useEffect } from 'react';
-// Aqui importamos a conexão que você já criou na pasta lib!
 import { supabase } from '../lib/supabaseClient';
 
 export default function BuscaPage() {
-  // O <any[]> avisa ao TypeScript que essa lista pode receber qualquer tipo de dado
   const [busca, setBusca] = useState('');
   const [resultados, setResultados] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
 
-  const fazerBusca = async () => {
+  const fazerBusca = async (q = busca) => {
     setCarregando(true);
-    
-    if (busca === '') {
-      // Busca os 10 documentos mais recentes se a barra estiver vazia
-      const { data } = await supabase.from('documentos').select('*').order('criado_em', { ascending: false }).limit(10);
-      setResultados(data || []);
-    } else {
-      // Faz a busca estatística inteligente
-      const { data } = await supabase
-        .from('documentos')
-        .select('*')
-        .textSearch('search_vector', busca, { config: 'portuguese' });
-      setResultados(data || []);
+    try {
+      if (!q) {
+        const { data } = await supabase.from('documentos').select('*').order('created_at', { ascending: false }).limit(12);
+        setResultados(data || []);
+      } else {
+        const { data } = await supabase
+          .from('documentos')
+          .select('*')
+          .ilike('titulo', `%${q}%`)
+          .limit(50);
+        setResultados(data || []);
+      }
+    } catch (e) {
+      setResultados([]);
     }
-    
     setCarregando(false);
   };
 
-  useEffect(() => {
-    fazerBusca();
-  }, [busca]);
+  useEffect(() => { fazerBusca(); }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await fazerBusca(busca);
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 text-black">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-blue-900 mb-8">Acervo Acadêmico Inteligente</h1>
-        
-        <input 
-          type="text"
-          placeholder="Busque por disciplinas, livros ou assuntos..."
-          className="w-full p-4 text-lg border-2 border-gray-300 rounded-xl mb-8 shadow-sm focus:border-blue-500 outline-none"
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-        />
+    <main className="min-h-screen p-8">
+      <div className="max-w-4xl mx-auto">
+        <header className="text-center mb-8">
+          <h1 className="text-4xl font-bold">Acervo Acadêmico Inteligente</h1>
+          <p className="mt-2 text-gray-600">Organize, busque e acesse documentos acadêmicos com ajuda de IA.</p>
+          <div className="mt-4">
+            <a href="/sobre" className="text-blue-600 hover:text-blue-800 text-sm hover:underline">Sobre esta plataforma →</a>
+          </div>
+        </header>
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex gap-3 mb-6">
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Busque por título, autor ou assunto..."
+            className="input-field flex-1"
+            disabled={carregando}
+          />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={carregando}
+          >
+            {carregando ? <><span className="spinner" />Buscando...</> : 'Buscar'}
+          </button>
+        </form>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {carregando ? (
-            <p className="text-center text-gray-500">Buscando na biblioteca...</p>
+            <div className="col-span-full text-center text-gray-500">Buscando na biblioteca...</div>
           ) : resultados.length === 0 ? (
-            <p className="text-center text-gray-500">Nenhum documento encontrado para esta busca.</p>
+            <div className="col-span-full text-center text-gray-500">Nenhum documento encontrado.</div>
           ) : (
             resultados.map((doc) => (
-              <a key={doc.id} href={doc.drive_url} target="_blank" rel="noreferrer" className="block bg-white p-6 rounded-xl border hover:shadow-md transition">
-                <h2 className="text-xl font-bold text-gray-800">{doc.titulo}</h2>
-                <p className="text-gray-600 mt-2 line-clamp-2">{doc.conteudo_snippet}</p>
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {doc.tags?.map((tag: string) => (
-                    <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold">
-                      #{tag}
-                    </span>
-                  ))}
+              <a key={doc.id} href={doc.drive_url} target="_blank" rel="noreferrer" className="block p-5 rounded-xl card">
+                <h3 className="text-lg font-semibold">{doc.titulo}</h3>
+                <p className="text-sm text-gray-600 mt-2 line-clamp-3">{doc.conteudo_snippet}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(doc.tags || []).map((t: string) => <span key={t} className="tag">#{t}</span>)}
                 </div>
               </a>
             ))
           )}
         </div>
+
+        <footer className="mt-16 border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-500">
+          <p>© {new Date().getFullYear()} StatContext. Plataforma desenvolvida por @dyinghawks.</p>
+        </footer>
       </div>
     </main>
   );

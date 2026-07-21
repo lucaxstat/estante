@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+/* Theme tokens */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: 255 255 255; /* light RGB */
+  --fg: 17 17 17;
+  --muted: 99 102 241; /* accent fallback */
+  --burnt-50: 255 247 237;
+  --burnt-100: 255 237 217;
+  --burnt-500: 204 102 0;
+  --card-rgb: 255 255 255;
+  --glass: 255 255 255;
+  --shadow: 0 10px 30px rgba(2,6,23,0.08);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Dark theme variables */
+:root.theme-dark {
+  --bg: 9 10 11;
+  --fg: 237 237 237;
+  --muted: 250 204 21;
+  --burnt-50: 18 18 18;
+  --burnt-100: 28 28 28;
+  --burnt-500: 255 179 64;
+  --card-rgb: 12 12 12;
+  --glass: 24 24 24;
+  --shadow: 0 8px 24px rgba(0,0,0,0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Light theme override class */
+:root.theme-light {
+  --bg: 255 255 255;
+  --fg: 17 17 17;
+  --muted: 99 102 241;
+  --burnt-50: 255 247 237;
+  --burnt-100: 255 237 217;
+  --burnt-500: 204 102 0;
+  --card-rgb: 255 255 255;
+  --glass: 255 255 255;
+  --shadow: 0 10px 30px rgba(2,6,23,0.08);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Base styles using tokens */
+html, body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  transition: background-color 200ms ease, color 200ms ease;
 }
+
+/* Reusable components (cards, buttons, tags) */
+.card {
+  background-color: rgb(var(--card-rgb));
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.card:hover { transform: translateY(-4px); }
+
+.btn-primary {
+  background: linear-gradient(90deg, rgba(var(--burnt-500),1), rgba(255,180,80,1));
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease, background-color 120ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-primary:hover { transform: translateY(-2px); filter: saturate(1.05); }
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-danger { background: #dc2626; color: white; padding: 0.5rem 0.8rem; border-radius: 0.6rem; transition: opacity 120ms ease; }
+.btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.input-field {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(var(--card-rgb) / 0.96);
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.input-field:focus {
+  outline: none;
+  border-color: rgba(var(--burnt-500), 0.9);
+  box-shadow: 0 0 0 4px rgba(var(--burnt-500), 0.12);
+  transform: translateY(-1px);
+}
+.input-field:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-top-color: white;
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(255, 236, 209, 0.6);
+  color: rgb(var(--burnt-500));
+}
+
+/* Utility to make elements look glassy */
+.glass {
+  background: rgba(var(--glass) / 0.7);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 50;
+}
+.toast {
+  min-width: 18rem;
+  background: rgba(var(--card-rgb) / 0.98);
+  color: rgb(var(--fg));
+  border: 1px solid rgba(var(--fg) / 0.12);
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  animation: slideIn 240ms ease;
+}
+.toast-success { border-left: 4px solid rgb(var(--burnt-500)); }
+.toast-error { border-left: 4px solid #dc2626; }
+.toast-info { border-left: 4px solid rgb(var(--muted)); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Smooth focus outlines */
+*:focus { outline: 2px solid rgba(var(--muted), 0.12); outline-offset: 2px; }
+
