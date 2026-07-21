@@ -27,7 +27,7 @@ class handler(BaseHTTPRequestHandler):
             
             texto_documento = req_doc.text
 
-            # 4. Configura o Prompt para a Inteligência Artificial
+            # 4. Configura o Prompt para a IA
             prompt = f"""
             Você é um assistente acadêmico. Analise o texto abaixo e extraia as informações no exato formato JSON.
             Não escreva mais nada, apenas o JSON puro, sem crases de formatação.
@@ -41,14 +41,14 @@ class handler(BaseHTTPRequestHandler):
             {texto_documento[:20000]}
             """
 
-            # 5. Comunicação com a API da OpenAI (GPT-4o-mini)
-            api_key = os.environ.get('OPENAI_API_KEY')
+            # 5. Comunicação com a API da Groq (Llama 3 - Gratuita e ultrarrápida)
+            api_key = os.environ.get('GROQ_API_KEY')
             if not api_key:
-                raise Exception("A chave OPENAI_API_KEY não foi encontrada na Vercel.")
+                raise Exception("A chave GROQ_API_KEY não foi encontrada na Vercel.")
 
-            openai_url = "https://api.openai.com/v1/chat/completions"
+            groq_url = "https://api.groq.com/openai/v1/chat/completions"
             payload = {
-                "model": "gpt-4o-mini",
+                "model": "llama-3.3-70b-versatile",
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.3
             }
@@ -57,14 +57,13 @@ class handler(BaseHTTPRequestHandler):
                 "Content-Type": "application/json"
             }
 
-            req_ia = requests.post(openai_url, headers=headers, json=payload)
+            req_ia = requests.post(groq_url, headers=headers, json=payload)
             dados_ia = req_ia.json()
 
-            # Trata erros caso a OpenAI retorne algum aviso
             if "error" in dados_ia:
-                raise Exception(f"Erro na OpenAI: {dados_ia['error'].get('message', 'Erro desconhecido')}")
+                raise Exception(f"Erro na Groq: {dados_ia['error'].get('message', 'Erro desconhecido')}")
 
-            # 6. Extrai e limpa a resposta do GPT
+            # 6. Extrai e limpa a resposta
             texto_resposta = dados_ia['choices'][0]['message']['content']
             texto_limpo = texto_resposta.replace("```json", "").replace("```", "").strip()
             
