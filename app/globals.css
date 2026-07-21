@@ -2,41 +2,15 @@
 
 /* Theme tokens */
 :root {
-  --bg: 255 250 242; /* warm paper tone */
-  --fg: 34 30 25; /* softer dark brown for comfortable reading */
-  --muted: 153 102 51; /* soft accent */
-  --burnt-50: 255 250 240;
-  --burnt-100: 255 243 229;
-  --burnt-500: 189 124 44; /* burnt yellow/brown */
-  --card-rgb: 255 253 248;
-  --glass: 255 253 248;
-  --shadow: 0 8px 20px rgba(34,30,25,0.06);
-}
-
-/* Dark theme variables */
-:root.theme-dark {
-  --bg: 18 16 14; /* dark warm background */
-  --fg: 236 230 221; /* warm off-white text */
-  --muted: 210 170 110;
-  --burnt-50: 28 26 24;
-  --burnt-100: 36 34 32;
-  --burnt-500: 210 140 60;
-  --card-rgb: 24 22 20;
-  --glass: 28 26 24;
-  --shadow: 0 8px 24px rgba(0,0,0,0.6);
-}
-
-/* Light theme override class */
-:root.theme-light {
-  --bg: 255 250 242;
-  --fg: 34 30 25;
-  --muted: 153 102 51;
-  --burnt-50: 255 250 240;
-  --burnt-100: 255 243 229;
-  --burnt-500: 189 124 44;
-  --card-rgb: 255 253 248;
-  --glass: 255 253 248;
-  --shadow: 0 8px 20px rgba(34,30,25,0.06);
+  --bg: 255 245 230; /* warm paper tone */
+  --fg: 34 28 20; /* rich brown text */
+  --muted: 150 108 50; /* soft accent */
+  --burnt-50: 255 247 236;
+  --burnt-100: 255 240 223;
+  --burnt-500: 183 112 36;
+  --card-rgb: 255 251 244;
+  --glass: 255 251 244;
+  --shadow: 0 8px 25px rgba(34,28,20,0.08);
 }
 
 /* Base styles using tokens */
@@ -44,6 +18,10 @@ html, body {
   background-color: rgb(var(--bg));
   color: rgb(var(--fg));
   transition: background-color 200ms ease, color 200ms ease;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* Reusable components (cards, buttons, tags) */
@@ -68,26 +46,27 @@ html, body {
 }
 .btn-primary:hover { transform: translateY(-2px); filter: saturate(1.05); }
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
   transform: none;
 }
 
-.btn-danger { background: #dc2626; color: white; padding: 0.5rem 0.8rem; border-radius: 0.6rem; transition: opacity 120ms ease; }
+.btn-danger { background: #b91c1c; color: white; padding: 0.5rem 0.8rem; border-radius: 0.6rem; transition: opacity 120ms ease; }
 .btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .input-field {
   width: 100%;
   padding: 0.95rem 1rem;
   border-radius: 1rem;
-  border: 1px solid rgba(34,30,25,0.08);
+  border: 1px solid rgba(34,28,20,0.12);
   background: rgba(var(--card-rgb) / 0.98);
+  color: rgb(var(--fg));
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 .input-field:focus {
   outline: none;
   border-color: rgba(var(--burnt-500), 0.85);
-  box-shadow: 0 0 0 6px rgba(var(--burnt-500), 0.08);
+  box-shadow: 0 0 0 6px rgba(var(--burnt-500), 0.12);
   transform: translateY(-1px);
 }
 .input-field:disabled {
@@ -113,17 +92,15 @@ html, body {
   padding: 0.18rem 0.5rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  background: rgba(245,238,226,0.7);
+  background: rgba(245,238,226,0.9);
   color: rgb(var(--burnt-500));
 }
 
-/* Utility to make elements look glassy */
 .glass {
-  background: rgba(var(--glass) / 0.7);
+  background: rgba(var(--glass) / 0.85);
   backdrop-filter: blur(6px) saturate(120%);
 }
 
-/* Toast notifications */
 .toast-container {
   position: fixed;
   right: 1rem;
@@ -137,7 +114,7 @@ html, body {
   min-width: 18rem;
   background: rgba(var(--card-rgb) / 0.98);
   color: rgb(var(--fg));
-  border: 1px solid rgba(var(--fg) / 0.12);
+  border: 1px solid rgba(var(--fg) / 0.16);
   padding: 1rem 1.2rem;
   border-radius: 1rem;
   box-shadow: var(--shadow);
@@ -145,7 +122,7 @@ html, body {
   animation: slideIn 240ms ease;
 }
 .toast-success { border-left: 4px solid rgb(var(--burnt-500)); }
-.toast-error { border-left: 4px solid #dc2626; }
+.toast-error { border-left: 4px solid #b91c1c; }
 .toast-info { border-left: 4px solid rgb(var(--muted)); }
 
 @keyframes slideIn {
@@ -153,6 +130,7 @@ html, body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Smooth focus outlines */
-*:focus { outline: 2px solid rgba(var(--muted), 0.12); outline-offset: 2px; }
+* { color: rgb(var(--fg)); }
+
+*:focus { outline: 2px solid rgba(var(--muted), 0.18); outline-offset: 2px; }
 
