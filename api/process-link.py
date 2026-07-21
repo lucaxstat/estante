@@ -47,7 +47,7 @@ class handler(BaseHTTPRequestHandler):
             if not api_key:
                 raise Exception("A chave GEMINI_API_KEY não foi encontrada nas variáveis da Vercel.")
 
-            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+            gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
             payload = {
                 "contents": [{"parts": [{"text": prompt}]}]
             }
