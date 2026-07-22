@@ -97,7 +97,7 @@ export default function BuscaPage() {
       {/* Footer discreto */}
       <footer className="fixed inset-x-0 bottom-0 border-t border-[#a2a9b1] bg-[#f8f9fa] px-4 py-3">
         <div className="mx-auto max-w-4xl flex flex-col gap-1 text-center text-xs text-[#54595d] sm:flex-row sm:justify-between sm:text-left">
-          <p>© 2026 StatViva • Desenvolvido por @StatViva</p>
+          <p>© 2026 StatViva • Projeto desenvolvido por @StatViva</p>
           <p><a href="mailto:hello.statviva@gmail.com" className="text-[#3366cc] hover:underline">hello.statviva@gmail.com</a></p>
         </div>
       </footer>
