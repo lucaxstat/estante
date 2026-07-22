@@ -39,13 +39,21 @@ export default function Admin() {
   }
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark' || (!savedTheme && document.documentElement.classList.contains('dark'));
     setDarkMode(isDark);
   }, []);
 
   const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark');
-    setDarkMode(!darkMode);
+    const newDark = !darkMode;
+    setDarkMode(newDark);
+    if (newDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
   };
 
   useEffect(() => {
@@ -198,30 +206,31 @@ export default function Admin() {
     setLoading(false);
   }
 
+  // ---- TELA DE LOGIN ----
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 px-4 py-10">
-        <div className="w-full max-w-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-6">
-          <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100 mb-4">Painel de Administração</h2>
-          <form onSubmit={login} className="space-y-3">
+      <div className="min-h-screen flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-sm rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 shadow-sm">
+          <h2 className="text-xl font-medium text-zinc-900 dark:text-zinc-100 mb-6 text-center">Acesso Restrito</h2>
+          <form onSubmit={login} className="space-y-4">
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Senha"
+              placeholder="Senha Administrativa"
               type="password"
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+              className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500 text-sm"
             />
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center rounded-md bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Verificando...' : 'Entrar no Painel'}
             </button>
           </form>
-          {message && <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">{message}</p>}
+          {message && <p className="mt-4 text-center text-sm text-red-600 dark:text-red-400">{message}</p>}
         </div>
-        <div className="toast-container">
+        <div className="toast-container fixed bottom-4 right-4 z-50 flex flex-col gap-2">
           {toasts.map((toast) => (
             <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
           ))}
@@ -230,20 +239,22 @@ export default function Admin() {
     );
   }
 
+  // ---- TELA DO PAINEL ADMIN ----
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
+    <div className="min-h-screen flex flex-col text-zinc-800 dark:text-zinc-100">
+      <div className="flex-1 mx-auto max-w-4xl w-full px-4 py-8 sm:px-6 lg:px-8">
+        
+        {/* Header Admin */}
         <header className="mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-light tracking-tight text-zinc-900 dark:text-zinc-100">Painel de Administração</h1>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Gerenciamento de documentos do acervo</p>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Gerenciamento de documentos e sistema</p>
           </div>
-          <div className="flex items-center gap-3">
-            <a href="/" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Início</a>
+          <div className="flex items-center gap-4">
+            <a href="/" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Sair / Início</a>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md border border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 transition text-zinc-600 dark:text-zinc-400"
+              className="p-2 rounded-md border border-zinc-200 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900 transition text-zinc-600 dark:text-zinc-400"
               aria-label="Alternar tema"
             >
               {darkMode ? '☀️' : '🌙'}
@@ -251,148 +262,117 @@ export default function Admin() {
           </div>
         </header>
 
-        {/* Formulário de adição */}
-        <div className="mb-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-5">
-          <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">Adicionar material</h3>
+        {/* Adicionar Material */}
+        <div className="mb-8 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Adicionar Documento</h3>
           <form onSubmit={addDocument} className="grid gap-3 sm:grid-cols-[1fr_auto] mb-3">
             <input
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              placeholder="Cole a URL do documento ou página"
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+              placeholder="Cole a URL do Google Docs"
+              className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500 text-sm"
               disabled={loading}
             />
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-md bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-6 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading || !newUrl.trim()}
             >
-              {loading ? 'Processando...' : 'Processar'}
+              {loading ? 'Processando IA...' : 'Processar Documento'}
             </button>
           </form>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Aceita URLs de páginas web e documentos de texto. O sistema extrai e analisa o conteúdo automaticamente.</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">O sistema extrairá o texto puro, criará o resumo e as tags automaticamente usando a IA.</p>
         </div>
 
-        {/* Filtros e Groq Key */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           {/* Filtros */}
-          <div className="md:col-span-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-5">
-            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">Filtros</h3>
+          <div className="md:col-span-2 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Filtrar Acervo</h3>
             <form onSubmit={handleFilterSubmit} className="grid gap-3 sm:grid-cols-3">
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Pesquisar por título"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none text-sm transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+                placeholder="Pesquisar..."
+                className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none text-sm transition focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500"
                 disabled={loading}
               />
               <select
                 value={tagFilter}
                 onChange={(e) => setTagFilter(e.target.value)}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 px-4 py-2 text-zinc-900 dark:text-zinc-100 outline-none text-sm transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+                className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 outline-none text-sm transition focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500"
                 disabled={loading}
               >
                 <option value="">Todas as tags</option>
                 {availableTags.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
+                  <option key={t} value={t}>{t}</option>
                 ))}
               </select>
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-4 py-2 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 inline-flex items-center justify-center rounded-md bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-white disabled:opacity-50"
                   disabled={loading}
                 >
-                  Aplicar
+                  Filtrar
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setTagFilter('');
-                    fetchDocs(1);
-                  }}
-                  className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:border-zinc-400 dark:hover:border-zinc-600"
+                  onClick={() => { setSearchTerm(''); setTagFilter(''); fetchDocs(1); }}
+                  className="flex-1 rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:bg-zinc-100 dark:hover:bg-zinc-700"
                   disabled={loading}
                 >
                   Limpar
                 </button>
               </div>
             </form>
-            {message && <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">{message}</p>}
           </div>
 
-          {/* Groq Key */}
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-5">
-            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-3">Chave Groq</h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 leading-relaxed">
-              Cole sua chave Groq para evitar bloqueios ao processar documentos.
+          {/* Configuração de API */}
+          <div className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Chave da IA (Groq)</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3">
+              Atualize a chave para evitar bloqueios de limite de requisições (rate limit).
             </p>
-            <form onSubmit={saveGroqKey} className="space-y-2.5">
+            <form onSubmit={saveGroqKey} className="space-y-2">
               <input
                 value={groqKey}
                 onChange={(e) => setGroqKey(e.target.value)}
-                placeholder="Cole aqui"
+                placeholder="gsk_..."
                 type="password"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none text-sm transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
+                className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none text-sm transition focus:ring-1 focus:ring-zinc-400"
                 disabled={loading}
               />
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-4 py-2 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full inline-flex items-center justify-center rounded-md bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-white disabled:opacity-50"
                 disabled={loading}
               >
-                {loading ? 'Salvando...' : 'Salvar'}
+                {loading ? 'Salvando...' : 'Atualizar Chave'}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Lista de documentos */}
+        {/* Listagem para Edição e CRUD */}
         <section>
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">Documentos ({docs.length})</h2>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Gerenciar Documentos</h2>
+          <div className="grid grid-cols-1 gap-3">
             {docs.map((d) => (
-              <div
-                key={d.id}
-                className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-4 transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-sm leading-snug">{d.titulo || '—'}</h4>
-                    <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-400 line-clamp-2">{d.conteudo_snippet || 'Sem descrição'}</p>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {(d.tags || []).map((t, i) => (
-                        <span key={i} className="rounded-full border border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-start gap-2 sm:items-end">
-                    <a href={d.drive_url} target="_blank" rel="noreferrer" className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:underline">
-                      Abrir
-                    </a>
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={() => setEditing(Object.assign({}, d))}
-                        className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-700 px-2.5 py-1 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition hover:border-zinc-400 dark:hover:border-zinc-600"
-                        disabled={loading}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => confirmDelete(d.id)}
-                        className="rounded-md bg-zinc-800 dark:bg-zinc-700 text-white px-2.5 py-1 text-xs font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600"
-                        disabled={loading}
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </div>
+              <div key={d.id} className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{d.titulo || 'Sem Título'}</h4>
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 truncate">{d.conteudo_snippet || 'Sem descrição'}</p>
+                </div>
+                <div className="flex gap-2">
+                  <a href={d.drive_url} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition">
+                    Drive
+                  </a>
+                  <button onClick={() => setEditing(Object.assign({}, d))} className="rounded border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700">
+                    Editar
+                  </button>
+                  <button onClick={() => confirmDelete(d.id)} className="rounded border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 transition hover:bg-red-100 dark:hover:bg-red-900/40">
+                    Excluir
+                  </button>
                 </div>
               </div>
             ))}
@@ -400,72 +380,55 @@ export default function Admin() {
 
           {/* Paginação */}
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">Página {page}</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">Página {page}</p>
             <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  if (page > 1) fetchDocs(page - 1);
-                }}
-                disabled={page <= 1}
-                className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:border-zinc-400 dark:hover:border-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button onClick={() => { if (page > 1) fetchDocs(page - 1); }} disabled={page <= 1} className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 disabled:opacity-50">
                 Anterior
               </button>
-              <button
-                onClick={() => {
-                  if (hasMore) fetchDocs(page + 1);
-                }}
-                disabled={!hasMore}
-                className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:border-zinc-400 dark:hover:border-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button onClick={() => { if (hasMore) fetchDocs(page + 1); }} disabled={!hasMore} className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 disabled:opacity-50">
                 Próxima
               </button>
             </div>
           </div>
         </section>
 
-        {/* Modal de Edição */}
+        {/* Modal de Edição CRUD */}
         {editing && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 backdrop-blur-sm px-4 py-10">
-            <div className="w-full max-w-sm rounded-lg border border-zinc-700 bg-zinc-800 p-5 shadow-lg">
-              <h3 className="text-lg font-medium text-zinc-100 mb-4">Editar Documento</h3>
-              <div className="space-y-3">
-                <input
-                  value={editing.titulo || ''}
-                  onChange={(e) => setEditing({ ...editing, titulo: e.target.value })}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-700 px-4 py-2 text-zinc-100 placeholder-zinc-500 outline-none text-sm transition focus:ring-1 focus:ring-zinc-600"
-                  placeholder="Título"
-                  disabled={loading}
-                />
-                <textarea
-                  value={editing.conteudo_snippet || ''}
-                  onChange={(e) => setEditing({ ...editing, conteudo_snippet: e.target.value })}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-700 px-4 py-2 text-zinc-100 placeholder-zinc-500 outline-none text-sm transition focus:ring-1 focus:ring-zinc-600"
-                  rows={3}
-                  placeholder="Descrição"
-                  disabled={loading}
-                />
-                <input
-                  value={(editing.tags || []).join(', ')}
-                  onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-700 px-4 py-2 text-zinc-100 placeholder-zinc-500 outline-none text-sm transition focus:ring-1 focus:ring-zinc-600"
-                  placeholder="tags, separadas, por, vírgula"
-                  disabled={loading}
-                />
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <button
-                    onClick={() => setEditing(null)}
-                    className="rounded-lg border border-zinc-700 bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-600"
-                    disabled={loading}
-                  >
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 py-10">
+            <div className="w-full max-w-lg rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">Editar Metadados</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-zinc-500 mb-1 block">Título do Documento</label>
+                  <input
+                    value={editing.titulo || ''}
+                    onChange={(e) => setEditing({ ...editing, titulo: e.target.value })}
+                    className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none text-sm focus:ring-1 focus:ring-zinc-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-zinc-500 mb-1 block">Resumo Gerado (Snippet)</label>
+                  <textarea
+                    value={editing.conteudo_snippet || ''}
+                    onChange={(e) => setEditing({ ...editing, conteudo_snippet: e.target.value })}
+                    className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none text-sm focus:ring-1 focus:ring-zinc-400"
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-zinc-500 mb-1 block">Tags Indexadas (separadas por vírgula)</label>
+                  <input
+                    value={(editing.tags || []).join(', ')}
+                    onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
+                    className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none text-sm focus:ring-1 focus:ring-zinc-400"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button onClick={() => setEditing(null)} className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700">
                     Cancelar
                   </button>
-                  <button
-                    onClick={saveEdit}
-                    className="rounded-lg bg-zinc-700 text-white px-4 py-2 text-sm font-medium transition hover:bg-zinc-600"
-                    disabled={loading}
-                  >
-                    {loading ? 'Salvando...' : 'Salvar'}
+                  <button onClick={saveEdit} className="rounded-md bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-4 py-2 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-white" disabled={loading}>
+                    {loading ? 'Salvando...' : 'Salvar Alterações'}
                   </button>
                 </div>
               </div>
@@ -473,44 +436,37 @@ export default function Admin() {
           </div>
         )}
 
-        {/* Modal de Confirmação */}
+        {/* Modal de Confirmação de Exclusão */}
         {showConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 backdrop-blur-sm px-4 py-10">
-            <div className="w-full max-w-sm rounded-lg border border-zinc-700 bg-zinc-800 p-5 shadow-lg">
-              <h3 className="text-lg font-medium text-zinc-100 mb-2">Confirmar exclusão?</h3>
-              <p className="text-sm leading-5 text-zinc-400 mb-5">Essa ação é irreversível.</p>
-              <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                <button
-                  onClick={() => setShowConfirm(null)}
-                  className="rounded-lg border border-zinc-700 bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-600"
-                  disabled={loading}
-                >
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+            <div className="w-full max-w-sm rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl text-center">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">Excluir documento?</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Esta ação apagará permanentemente o documento do Supabase.</p>
+              <div className="flex justify-center gap-3">
+                <button onClick={() => setShowConfirm(null)} className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700">
                   Cancelar
                 </button>
-                <button
-                  onClick={() => doDelete(showConfirm)}
-                  className="rounded-lg bg-zinc-800 text-white px-4 py-2 text-sm font-medium transition hover:bg-zinc-900"
-                  disabled={loading}
-                >
-                  {loading ? 'Excluindo...' : 'Excluir'}
+                <button onClick={() => doDelete(showConfirm)} className="rounded-md bg-red-600 text-white px-4 py-2 text-sm font-medium transition hover:bg-red-700" disabled={loading}>
+                  {loading ? 'Excluindo...' : 'Sim, Excluir'}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        <div className="toast-container">
+        {/* Toasts */}
+        <div className="toast-container fixed bottom-4 right-4 z-50 flex flex-col gap-2">
           {toasts.map((toast) => (
             <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
           ))}
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center text-xs text-zinc-500 dark:text-zinc-500 space-y-1">
-          <p>© 2026 StatViva. Painel administrativo desenvolvido por @StatViva.</p>
-          <p>Contato: <a href="mailto:hello.statviva@gmail.com" className="text-zinc-700 dark:text-zinc-300 hover:underline">hello.statviva@gmail.com</a></p>
-        </footer>
       </div>
+
+      {/* Footer Admin */}
+      <footer className="mt-auto border-t border-zinc-200 dark:border-zinc-800 py-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mb-1">© 2026 StatViva. Painel administrativo desenvolvido por @StatViva.</p>
+        <p>Contato: <a href="mailto:hello.statviva@gmail.com" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-2">hello.statviva@gmail.com</a></p>
+      </footer>
     </div>
   );
 }

@@ -1,24 +1,145 @@
-import Image from "next/image";
+'use client';
+import { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-export default function Home() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
+
+export default function BuscaPage() {
+  const [busca, setBusca] = useState('');
+  const [resultados, setResultados] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  const fazerBusca = async (q = busca) => {
+    setCarregando(true);
+    try {
+      if (!q) {
+        const { data } = await supabase.from('documentos').select('*').order('created_at', { ascending: false }).limit(12);
+        setResultados(data || []);
+      } else {
+        const { data } = await supabase
+          .from('documentos')
+          .select('*')
+          .ilike('titulo', `%${q}%`)
+          .limit(50);
+        setResultados(data || []);
+      }
+    } catch (e) {
+      setResultados([]);
+    }
+    setCarregando(false);
+  };
+
+  useEffect(() => { 
+    fazerBusca(); 
+    setMounted(true);
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await fazerBusca(busca);
+  };
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark' || (!savedTheme && document.documentElement.classList.contains('dark'));
+    setDarkMode(isDark);
+    if (isDark) document.documentElement.classList.add('dark');
+  }, []);
+
+  const toggleTheme = () => {
+    const newDark = !darkMode;
+    setDarkMode(newDark);
+    if (newDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-yellow-50 to-white">
-      <main className="max-w-4xl w-full p-12 rounded-2xl card">
-        <div className="flex items-center gap-6">
-          <div className="w-24 h-24 rounded-full bg-yellow-100 flex items-center justify-center">
-            <Image src="/next.svg" alt="logo" width={48} height={24} />
-          </div>
+    <main className="relative min-h-screen pb-24 flex flex-col bg-zinc-50 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+      <div className="mx-auto flex-1 w-full max-w-4xl flex flex-col px-4 py-8 sm:px-6 lg:px-8">
+        
+        {/* Cabeçalho minimalista */}
+        <header className="mb-12 flex items-center justify-between pb-6 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <h1 className="text-3xl font-bold">Acervo Acadêmico Inteligente</h1>
-            <p className="text-gray-600 mt-1">Organize e descubra conhecimento com classificação automática por IA.</p>
+            <h1 className="text-2xl font-light tracking-tight text-zinc-900 dark:text-zinc-100">Acervo Acadêmico</h1>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Documentos do Prof. João Carvalho</p>
           </div>
-        </div>
+          <div className="flex items-center gap-4">
+            <a href="/sobre" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">Sobre</a>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+              aria-label="Alternar tema"
+            >
+              {mounted ? (darkMode ? '☀️' : '🌙') : '🌙'}
+            </button>
+          </div>
+        </header>
 
-        <div className="mt-8 flex gap-4">
-          <a className="btn-primary inline-flex items-center gap-3" href="/admin">Painel Admin</a>
-          <a className="px-4 py-2 rounded bg-white border" href="/">Explorar acervo</a>
+        {/* Formulário de busca discreto */}
+        <form onSubmit={handleSubmit} className="mb-10 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por título, autor ou assunto..."
+            className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600 shadow-sm"
+            disabled={carregando}
+          />
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-6 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            disabled={carregando}
+          >
+            {carregando ? <>Buscando...</> : 'Buscar'}
+          </button>
+        </form>
+
+        {/* Grid de documentos */}
+        <section className="grid gap-4 lg:grid-cols-2">
+          {carregando ? (
+            <div className="col-span-full text-center text-zinc-500 dark:text-zinc-400 py-8">Buscando...</div>
+          ) : resultados.length === 0 ? (
+            <div className="col-span-full text-center text-zinc-500 dark:text-zinc-400 py-8">Nenhum documento encontrado.</div>
+          ) : (
+            resultados.map((doc) => (
+              <a
+                key={doc.id}
+                href={doc.drive_url}
+                target="_blank"
+                rel="noreferrer"
+                className="group block rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-5 transition hover:border-zinc-300 dark:hover:border-zinc-700 shadow-sm hover:shadow-md"
+              >
+                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">{doc.titulo}</h3>
+                <p className="mt-2.5 text-sm leading-6 text-zinc-600 dark:text-zinc-400 line-clamp-3">{doc.conteudo_snippet}</p>
+                <div className="mt-3.5 flex flex-wrap gap-1.5">
+                  {Array.isArray(doc.tags) && doc.tags.map((t: string) => (
+                    <span key={t} className="inline-flex items-center rounded-full border border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            ))
+          )}
+        </section>
+      </div>
+
+      {/* Footer discreto e Fixo */}
+      <footer className="fixed inset-x-0 bottom-0 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-md px-4 py-3">
+        <div className="mx-auto max-w-4xl flex flex-col gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400 sm:flex-row sm:justify-between sm:text-left font-medium">
+          <p>© 2026 StatViva • Desenvolvido por @StatViva</p>
+          <p><a href="mailto:hello.statviva@gmail.com" className="text-zinc-700 dark:text-zinc-300 hover:underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-2 transition-colors">hello.statviva@gmail.com</a></p>
         </div>
-      </main>
-    </div>
+      </footer>
+    </main>
   );
 }
