@@ -6,6 +6,7 @@ export default function BuscaPage() {
   const [busca, setBusca] = useState('');
   const [resultados, setResultados] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   const fazerBusca = async (q = busca) => {
     setCarregando(true);
@@ -34,45 +35,61 @@ export default function BuscaPage() {
     await fazerBusca(busca);
   };
 
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setDarkMode(isDark);
+  }, []);
+
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle('dark');
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <main className="relative min-h-screen pb-28 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-200">
-      <div className="mx-auto flex min-h-full max-w-5xl flex-col px-4 py-10 sm:px-6 lg:px-8">
-        <header className="mb-10">
-          <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/90 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">Coleção de Textos</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">Acervo de Documentos Inteligente</h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400">Documentos e textos compartilhados pelo Prof. João Carvalho. Buscável, bem organizado, sem complicações.</p>
-            </div>
-            <nav className="flex flex-wrap gap-3 text-sm">
-              <a href="/sobre" className="rounded-md border border-slate-200 bg-white px-4 py-2 font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-500">Sobre</a>
-              <a href="/admin" className="rounded-md border border-slate-200 bg-white px-4 py-2 font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-500">Painel</a>
-            </nav>
+    <main className="relative min-h-screen pb-24 bg-zinc-50 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
+      <div className="mx-auto flex min-h-full max-w-4xl flex-col px-4 py-8 sm:px-6 lg:px-8">
+        {/* Cabeçalho minimalista */}
+        <header className="mb-12 flex items-center justify-between pb-6 border-b border-zinc-200 dark:border-zinc-800">
+          <div>
+            <h1 className="text-2xl font-light tracking-tight text-zinc-900 dark:text-zinc-100">Acervo Acadêmico</h1>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Documentos do Prof. João Carvalho</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <a href="/sobre" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition">Sobre</a>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md border border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 transition text-zinc-600 dark:text-zinc-400"
+              aria-label="Alternar tema"
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-[1fr_auto] mb-6">
+        {/* Formulário de busca discreto */}
+        <form onSubmit={handleSubmit} className="mb-10 grid gap-3 sm:grid-cols-[1fr_auto]">
           <input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="Busque por título, autor ou assunto..."
-            className="w-full rounded-md border border-slate-300 bg-white px-5 py-4 text-slate-900 shadow-sm outline-none transition focus:border-red-700 focus:ring-2 focus:ring-red-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-red-500 dark:focus:ring-red-500/20"
+            placeholder="Buscar por título, autor ou assunto..."
+            className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 outline-none transition focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-600"
             disabled={carregando}
           />
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded-md bg-red-700 px-5 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center rounded-lg bg-zinc-800 dark:bg-zinc-700 text-white px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-900 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={carregando}
           >
-            {carregando ? <><span className="spinner" />Buscando...</> : 'Buscar'}
+            {carregando ? <>Buscando...</> : 'Buscar'}
           </button>
         </form>
 
+        {/* Grid de documentos */}
         <section className="grid gap-4 lg:grid-cols-2">
           {carregando ? (
-            <div className="col-span-full text-center text-gray-500">Buscando na biblioteca...</div>
+            <div className="col-span-full text-center text-zinc-500 dark:text-zinc-400 py-8">Buscando...</div>
           ) : resultados.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500">Nenhum documento encontrado.</div>
+            <div className="col-span-full text-center text-zinc-500 dark:text-zinc-400 py-8">Nenhum documento encontrado.</div>
           ) : (
             resultados.map((doc) => (
               <a
@@ -80,26 +97,26 @@ export default function BuscaPage() {
                 href={doc.drive_url}
                 target="_blank"
                 rel="noreferrer"
-                className="group block rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="group block rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 p-5 transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm"
               >
-                <h3 className="text-xl font-semibold text-slate-900 transition group-hover:text-red-700 dark:text-slate-100 dark:group-hover:text-red-400">{doc.titulo}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-3 dark:text-slate-400">{doc.conteudo_snippet}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 leading-snug">{doc.titulo}</h3>
+                <p className="mt-2.5 text-sm leading-6 text-zinc-600 dark:text-zinc-400 line-clamp-3">{doc.conteudo_snippet}</p>
+                <div className="mt-3.5 flex flex-wrap gap-1.5">
                   {(doc.tags || []).map((t: string) => (
-                    <span key={t} className="inline-flex items-center rounded-full border border-red-700/10 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200">#{t}</span>
+                    <span key={t} className="inline-flex items-center rounded-full border border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">#{t}</span>
                   ))}
                 </div>
               </a>
             ))
           )}
         </section>
-
       </div>
 
-      <footer className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
-        <div className="mx-auto flex max-w-5xl flex-col gap-1 text-center text-sm text-slate-600 dark:text-slate-400 sm:flex-row sm:justify-between sm:text-left">
-          <p>© 2026 StatViva. Plataforma desenvolvida por @StatViva.</p>
-          <p><a href="mailto:hello.statviva@gmail.com" className="font-medium text-red-700 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400">Contato</a>: hello.statviva@gmail.com</p>
+      {/* Footer discreto */}
+      <footer className="fixed inset-x-0 bottom-0 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-sm px-4 py-3">
+        <div className="mx-auto max-w-4xl flex flex-col gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400 sm:flex-row sm:justify-between sm:text-left">
+          <p>© 2026 StatViva • Desenvolvido por @StatViva</p>
+          <p><a href="mailto:hello.statviva@gmail.com" className="text-zinc-700 dark:text-zinc-300 hover:underline">hello.statviva@gmail.com</a></p>
         </div>
       </footer>
     </main>
