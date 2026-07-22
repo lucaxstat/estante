@@ -26,7 +26,7 @@ test.describe('Admin flow', () => {
     const card = page.locator('div.card').first();
     await expect(card).toBeVisible();
 
-    await page.getByRole('button', { name: 'Editar' }).first().evaluate((el) => el.click());
+    await page.getByRole('button', { name: 'Editar' }).first().evaluate((el: HTMLElement) => el.click());
     const modal = page.locator('div:has(h3:has-text("Editar Documento"))').first();
     await expect(modal).toBeVisible();
     const titleInput = modal.locator('input').first();
@@ -34,10 +34,10 @@ test.describe('Admin flow', () => {
     await modal.getByRole('button', { name: 'Salvar', exact: true }).click();
     await expect(page.getByText(/Documento atualizado/)).toBeVisible({ timeout: 10000 });
 
-    await page.getByRole('button', { name: 'Excluir' }).first().evaluate((el) => el.click());
+    await page.getByRole('button', { name: 'Excluir' }).first().evaluate((el: HTMLElement) => el.click());
     const confirmDialog = page.locator('div:has-text("Confirma exclusão?")').first();
     await expect(confirmDialog).toBeVisible();
-    await confirmDialog.getByRole('button', { name: 'Excluir' , exact: true}).first().evaluate((el) => el.click());
+    await confirmDialog.getByRole('button', { name: 'Excluir' , exact: true}).first().evaluate((el: HTMLElement) => el.click());
     await expect(page.getByText('E2E Test Document Updated')).toHaveCount(0, { timeout: 10000 });
   });
 });
