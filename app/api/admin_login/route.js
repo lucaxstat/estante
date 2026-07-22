@@ -1,31 +1,23 @@
-import { NextResponse } from 'next/server'
-import crypto from 'crypto'
+import { NextResponse } from 'next/server';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const data = await req.json()
-    const senha = data?.password
-    const adminSenha = process.env.ADMIN_PASSWORD
-    const jwtSecret = process.env.ADMIN_JWT_SECRET || 'dev-secret'
+    const body = await request.json();
+    const { password } = body;
 
-    if (!adminSenha || !jwtSecret) {
-      return NextResponse.json({ success: false, error: 'Server not configured' }, { status: 500 })
+    // Busca a senha, verificando os dois nomes possíveis para evitar erro
+    const adminPass = process.env.ADMIN_PASSWORD || process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
+    if (!adminPass) {
+      return NextResponse.json({ success: false, error: 'Server not configured' });
     }
 
-    if (senha !== adminSenha) {
-      return NextResponse.json({ success: false, error: 'Senha incorreta' }, { status: 401 })
+    if (password === adminPass) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ success: false, error: 'Senha incorreta' });
     }
-
-    // Create a simple HMAC-based token (not a full JWT) for dev/testing
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url')
-    const payload = Buffer.from(JSON.stringify({ role: 'admin', iat: Date.now() })).toString('base64url')
-    const signature = crypto.createHmac('sha256', jwtSecret).update(`${header}.${payload}`).digest('base64url')
-    const token = `${header}.${payload}.${signature}`
-
-    const res = NextResponse.json({ success: true })
-    res.headers.set('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; SameSite=Strict`)
-    return res
-  } catch (err) {
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Erro interno no servidor' });
   }
 }
