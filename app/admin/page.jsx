@@ -185,16 +185,16 @@ export default function Admin() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-yellow-50 to-white">
-        <div className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md">
-          <h2 className="text-2xl font-semibold mb-4">Painel de Administração</h2>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-200 px-4 py-10">
+        <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/95">
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Painel de Administração</h2>
           <form onSubmit={login} className="space-y-4">
             <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha do Admin" type="password" className="input-field" />
             <button type="submit" className="btn-primary w-full">
               {loading ? <><span className="spinner" />Entrando...</> : 'Entrar'}
             </button>
           </form>
-          {message && <p className="mt-3 text-sm text-gray-600">{message}</p>}
+          {message && <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">{message}</p>}
         </div>
         <div className="toast-container">
           {toasts.map((toast) => (
@@ -206,23 +206,33 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-b from-yellow-50 to-white">
-      <div className="max-w-6xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Acervo Acadêmico - Admin</h1>
-          <div className="text-sm text-gray-600">Modo Administrador</div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-200">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <header className="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/95">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Painel Administrativo</p>
+              <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">Estante — Painel de Administração</h1>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Adicione e organize documentos na base.</p>
+            </div>
+            <nav className="flex flex-wrap gap-3">
+              <a href="/" className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-500">Início</a>
+              <a href="/sobre" className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-500">Sobre</a>
+            </nav>
+          </div>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="col-span-1 md:col-span-2 bg-white p-6 rounded-2xl shadow card">
-            <h3 className="font-semibold mb-3">Adicionar material</h3>
-            <form onSubmit={addDocument} className="flex gap-3">
-              <input value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="Link do Google Docs" className="input-field flex-1" disabled={loading} />
+        <section className="grid gap-6 md:grid-cols-3 mb-8">
+          <div className="col-span-1 md:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/95">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Adicionar material</h3>
+            <form onSubmit={addDocument} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="Link do documento, página ou recurso" className="input-field w-full" disabled={loading} />
               <button type="submit" className="btn-primary" disabled={loading || !newUrl.trim()}>
                 {loading ? <><span className="spinner" />Processando...</> : 'Processar'}
               </button>
             </form>
-            <form onSubmit={handleFilterSubmit} className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Aceita URLs de páginas web e documentos de texto. O sistema tenta extrair o conteúdo para análise.</p>
+            <form onSubmit={handleFilterSubmit} className="mt-4 grid gap-3 sm:grid-cols-3">
               <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Pesquisar por título" className="input-field" disabled={loading} />
               <select value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} className="input-field" disabled={loading}>
                 <option value=''>Filtrar por tag (todas)</option>
@@ -230,70 +240,83 @@ export default function Admin() {
               </select>
               <div className="flex gap-2">
                 <button type="submit" className="btn-primary" disabled={loading}>Aplicar</button>
-                <button type="button" onClick={(e) => { e.preventDefault(); setSearchTerm(''); setTagFilter(''); fetchDocs(1); }} className="px-2 py-2 rounded bg-gray-100 border border-gray-200 disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>Limpar</button>
+                <button type="button" onClick={(e) => { e.preventDefault(); setSearchTerm(''); setTagFilter(''); fetchDocs(1); }} className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-red-400" disabled={loading}>Limpar</button>
               </div>
             </form>
-            {message && <div className="mt-3 text-sm text-gray-600">{message}</div>}
+            {message && <div className="mt-3 text-sm text-slate-600 dark:text-slate-400">{message}</div>}
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow card">
-            <h3 className="font-semibold mb-3">Gerenciar chave Groq</h3>
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/95">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Chave de API de IA</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Use esta chave apenas quando o limite de requests da API principal for atingido. Cole aqui sua chave Groq para evitar bloqueios temporários e continuar processando documentos.
+            </p>
             <form onSubmit={saveGroqKey} className="space-y-3">
-              <input value={groqKey} onChange={(e) => setGroqKey(e.target.value)} placeholder="Nova chave Groq (opcional)" className="input-field" disabled={loading} />
+              <input value={groqKey} onChange={(e) => setGroqKey(e.target.value)} placeholder="Cole sua chave Groq aqui" className="input-field" disabled={loading} />
               <button type="submit" className="btn-primary w-full" disabled={loading}>
                 {loading ? <><span className="spinner" />Salvando...</> : 'Salvar chave'}
               </button>
             </form>
+            <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <p className="font-semibold">Como conseguir sua chave Groq</p>
+              <ol className="mt-2 list-inside list-decimal space-y-2 text-slate-600 dark:text-slate-300">
+                <li>Abra <a href="https://groq.com" target="_blank" rel="noreferrer" className="font-medium text-red-700 hover:underline dark:text-red-400">groq.com</a> e crie uma conta.</li>
+                <li>Acesse o painel de desenvolvedor e gere uma nova API key.</li>
+                <li>Cole a chave aqui e clique em salvar.</li>
+              </ol>
+              <p className="mt-3">A chave salva é usada para processar os links de documentos, reduzindo a dependência do limite do servidor principal.</p>
+            </div>
           </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold mb-4">Documentos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {docs.map((d) => (
-              <div key={d.id} className="bg-white p-4 rounded-xl shadow hover:shadow-md transition card">
-                <div className="flex justify-between items-start">
+              <div key={d.id} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/95">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h4 className="font-semibold text-lg">{d.titulo || '—'}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{d.conteudo_snippet || ''}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <h4 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{d.titulo || '—'}</h4>
+                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{d.conteudo_snippet || 'Sem descrição disponível.'}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
                       {(d.tags || []).map((t, i) => (
-                        <span key={i} className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">{t}</span>
+                        <span key={i} className="rounded-full border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">{t}</span>
                       ))}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <a href={d.drive_url} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">Abrir</a>
-                    <div className="mt-3 space-y-2">
-                      <button onClick={() => setEditing(Object.assign({}, d))} className="block w-full bg-gray-100 text-sm p-2 rounded">Editar</button>
-                      <button onClick={() => confirmDelete(d.id)} className="block w-full btn-danger text-sm p-2 rounded">Excluir</button>
+
+                  <div className="flex flex-col items-start gap-3 text-left sm:items-end">
+                    <a href={d.drive_url} target="_blank" rel="noreferrer" className="text-sm font-medium text-red-700 transition hover:underline dark:text-red-400">Abrir</a>
+                    <div className="grid w-full gap-2 sm:w-auto">
+                      <button onClick={() => setEditing(Object.assign({}, d))} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-800 transition hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-red-400">Editar</button>
+                      <button onClick={() => confirmDelete(d.id)} className="rounded-xl bg-red-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-500">Excluir</button>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-600">Página {page}</div>
-            <div className="flex gap-2">
-              <button onClick={() => { if (page > 1) fetchDocs(page - 1); }} disabled={page <= 1} className="px-3 py-2 bg-white border rounded">Anterior</button>
-              <button onClick={() => { if (hasMore) fetchDocs(page + 1); }} disabled={!hasMore} className="px-3 py-2 bg-white border rounded">Próxima</button>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-slate-600 dark:text-slate-400">Página {page}</div>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => { if (page > 1) fetchDocs(page - 1); }} disabled={page <= 1} className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:opacity-50 hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">Anterior</button>
+              <button onClick={() => { if (hasMore) fetchDocs(page + 1); }} disabled={!hasMore} className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition disabled:cursor-not-allowed disabled:opacity-50 hover:border-red-700 hover:text-red-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">Próxima</button>
             </div>
           </div>
         </section>
 
         {/* Edit modal */}
         {editing && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40">
-                  <div className="bg-white p-6 rounded-xl w-full max-w-lg card">
-              <h3 className="font-semibold mb-3">Editar Documento</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-10">
+            <div className="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-950 p-6 shadow-2xl">
+              <h3 className="text-xl font-semibold text-slate-100 mb-4">Editar Documento</h3>
               <div className="space-y-3">
                 <input value={editing.titulo || ''} onChange={(e) => setEditing({...editing, titulo: e.target.value})} className="input-field" disabled={loading} />
                 <textarea value={editing.conteudo_snippet || ''} onChange={(e) => setEditing({...editing, conteudo_snippet: e.target.value})} className="input-field" rows={4} disabled={loading} />
                 <input value={(editing.tags || []).join(', ')} onChange={(e) => setEditing({...editing, tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})} className="input-field" placeholder="tags, separadas, por, vírgula" disabled={loading} />
-                <div className="flex gap-3 justify-end">
-                  <button onClick={() => setEditing(null)} className="px-4 py-2" disabled={loading}>Cancelar</button>
-                  <button onClick={saveEdit} className="btn-primary px-4 py-2" disabled={loading}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <button onClick={() => setEditing(null)} className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-red-600 hover:text-red-300" disabled={loading}>Cancelar</button>
+                  <button onClick={saveEdit} className="btn-primary rounded-xl px-4 py-2" disabled={loading}>
                     {loading ? <><span className="spinner" />Salvando...</> : 'Salvar'}
                   </button>
                 </div>
@@ -302,15 +325,14 @@ export default function Admin() {
           </div>
         )}
 
-        {/* Confirm delete */}
         {showConfirm && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40">
-                  <div className="bg-white p-6 rounded-xl w-full max-w-sm card">
-              <h3 className="font-semibold mb-3">Confirma exclusão?</h3>
-              <p className="text-sm text-gray-700 mb-4">Essa ação é irreversível. Deseja continuar?</p>
-              <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowConfirm(null)} className="px-4 py-2" disabled={loading}>Cancelar</button>
-                <button onClick={() => doDelete(showConfirm)} className="btn-danger px-4 py-2" disabled={loading}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-10">
+            <div className="w-full max-w-sm rounded-3xl border border-slate-700 bg-slate-950 p-6 shadow-2xl">
+              <h3 className="text-xl font-semibold text-slate-100 mb-3">Confirma exclusão?</h3>
+              <p className="text-sm leading-6 text-slate-300 mb-5">Essa ação é irreversível. Deseja continuar?</p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button onClick={() => setShowConfirm(null)} className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-red-600 hover:text-red-300" disabled={loading}>Cancelar</button>
+                <button onClick={() => doDelete(showConfirm)} className="btn-danger rounded-xl px-4 py-2" disabled={loading}>
                   {loading ? <><span className="spinner" />Excluindo...</> : 'Excluir'}
                 </button>
               </div>
@@ -323,9 +345,9 @@ export default function Admin() {
           ))}
         </div>
         
-        <footer className="mt-16 border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+        <footer className="mt-16 border-t border-slate-200 pt-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
           <p>© 2026 StatViva. Painel administrativo desenvolvido por @StatViva.</p>
-          <p className="mt-2">Contato: <a href="mailto:hello.statviva@gmail.com" className="text-blue-600 hover:underline">hello.statviva@gmail.com</a></p>
+          <p className="mt-2">Contato: <a href="mailto:hello.statviva@gmail.com" className="text-red-700 transition hover:underline dark:text-red-400">hello.statviva@gmail.com</a></p>
         </footer>
       </div>
     </div>

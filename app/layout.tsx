@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Estante Acadêmica — Acervo e pesquisa",
-  description: "Acervo Acadêmico pesquisável com organização por tags e recursos para estudos e pesquisa. Plataforma StatViva.",
+  title: "Estante Materialista — Acervo e Pesquisa",
+  description: "Estante Materialista é um acervo inteligente de documentos e textos compartilhados pelo Prof. João Carvalho. Busque por título, autor ou tema e encontre resultados rápidos e organizados.",
   applicationName: 'StatViva',
 };
 

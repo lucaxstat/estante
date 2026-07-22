@@ -17,7 +17,7 @@ test.describe('Admin flow', () => {
   test('login, create, edit, and delete a document', async ({ page }) => {
     await page.request.post('/api/admin_login', { data: { password: adminPassword } });
     await page.goto('/admin');
-    await expect(page.getByText('Acervo Acadêmico - Admin')).toBeVisible();
+    await expect(page.getByText('Estante — Painel de Administração')).toBeVisible();
 
     await page.getByPlaceholder('Link do Google Docs').fill(documentUrl);
     await page.getByRole('button', { name: /Processar/i }).click();

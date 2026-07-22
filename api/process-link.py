@@ -5,6 +5,29 @@ import requests
 from http.server import BaseHTTPRequestHandler
 import jwt
 from supabase import create_client
+from html.parser import HTMLParser
+
+
+class HTMLTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.text_parts = []
+        self.skip = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script', 'style', 'noscript'):
+            self.skip = True
+
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style', 'noscript'):
+            self.skip = False
+
+    def handle_data(self, data):
+        if not self.skip:
+            self.text_parts.append(data)
+
+    def get_text(self):
+        return ' '.join(part.strip() for part in self.text_parts if part.strip())
 
 
 def _get_token_from_headers_or_cookies(headers):
@@ -53,19 +76,33 @@ class handler(BaseHTTPRequestHandler):
             dados = json.loads(post_data or b'{}')
             url_do_drive = dados.get('url', '')
 
-            # 2. Extrai a ID do documento do Google Docs
-            match = re.search(r"/d/([a-zA-Z0-9-_]+)", url_do_drive)
-            if not match:
-                raise Exception("Link inválido. Cole a URL de um documento do Google Docs.")
-            doc_id = match.group(1)
+            # 2. Baixa o conteúdo do link informado
+            if 'docs.google.com/document' in url_do_drive:
+                match = re.search(r"/d/([a-zA-Z0-9-_]+)", url_do_drive)
+                if not match:
+                    raise Exception("Link inválido. Cole a URL de um documento do Google Docs ou outro recurso compatível.")
+                doc_id = match.group(1)
+                export_url = f"https://docs.google.com/document/d/{doc_id}/export?format=txt"
+                req_doc = requests.get(export_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+                if req_doc.status_code != 200:
+                    raise Exception("O documento está trancado ou inacessível. Altere o compartilhamento para 'Qualquer pessoa com o link'.")
+                texto_documento = req_doc.text
+            else:
+                req_doc = requests.get(url_do_drive, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+                if req_doc.status_code != 200:
+                    raise Exception("Falha ao acessar o link. Verifique se a URL está correta e acessível.")
 
-            # 3. Baixa o texto puro do documento
-            export_url = f"https://docs.google.com/document/d/{doc_id}/export?format=txt"
-            req_doc = requests.get(export_url)
-            if req_doc.status_code != 200:
-                raise Exception("O documento está trancado. Altere o compartilhamento para 'Qualquer pessoa com o link'.")
-            
-            texto_documento = req_doc.text
+                content_type = (req_doc.headers.get('Content-Type') or '').lower()
+                if 'text/plain' in content_type or content_type.startswith('text/'):
+                    texto_documento = req_doc.text
+                elif 'html' in content_type or 'xhtml' in content_type:
+                    extractor = HTMLTextExtractor()
+                    extractor.feed(req_doc.text)
+                    texto_documento = extractor.get_text()
+                    if not texto_documento.strip():
+                        raise Exception('Não foi possível extrair texto da página HTML.')
+                else:
+                    raise Exception('Link não suportado. Use uma página web ou documento de texto acessível por URL para extração de conteúdo.')
 
             # 4. Configura o Prompt para a IA
             prompt = f"""

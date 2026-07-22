@@ -10,40 +10,40 @@ export default function SobrePage() {
           <Link href="/" className="text-brown-700 hover:underline mb-4 inline-block">
             Voltar à busca
           </Link>
-          <h1 className="text-4xl font-semibold mt-4 mb-2">Sobre Estante Acadêmica</h1>
-          <p className="text-brown-700">Um site pensado para tornar mais acessíveis pesquisas, referências e materiais de estudo.</p>
+          <h1 className="text-4xl font-semibold mt-4 mb-2">Sobre a Estante Materialista</h1>
+          <p className="text-brown-700">Um espaço para encontrar documentos e textos compartilhados pelo Prof. João Carvalho.</p>
         </header>
 
         <article className="prose prose-lg max-w-none mb-12 space-y-8 text-brown-900">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Visão geral</h2>
-            <p>
-              Estante Acadêmica é um site que combina mineração de dados, estatística computacional e APIs de inteligência artificial para organizar e recuperar materiais acadêmicos com mais precisão.
-            </p>
-            <p>
-              A plataforma indexa os documentos disponíveis, extrai metadados e faz análise de texto para gerar uma representação estruturada de cada registro. Em vez de apenas armazenar títulos, o sistema identifica temas, palavras-chave e relações semânticas usando mineração de texto e modelagem estatística.
-            </p>
-            <p>
-              Na prática, cada documento passa por etapas de processamento: extração de conteúdo relevante, normalização de termos, vetorização de frases e comparação de similaridade. Esses procedimentos são baseados em técnicas de estatística computacional, como análise de frequência, coocorrência e cálculo de distâncias em espaços vetoriais.
-            </p>
-            <p>
-              Para tornar a busca mais eficaz, o site usa uma API de IA para enriquecer os resumos e identificar o contexto dos trechos. A IA auxilia no reconhecimento de tópicos, na geração de pequenos resumos e na seleção de etiquetas temáticas que ajudam a filtrar resultados por área de interesse.
-            </p>
-            <p>
-              O resultado é uma experiência de pesquisa que se aproxima da leitura de um catálogo bem organizado: o usuário faz consultas por título, autor ou assunto, e o sistema devolve materiais relevantes com descrição clara e filtros que facilitam a exploração do acervo.
-            </p>
-          </section>
+            <h2 className="text-2xl font-semibold mb-4">O que é</h2>
+          <p>
+            A Estante Materialista reúne documentos e textos compartilhados pelo Prof. João Carvalho em um único lugar. Você pode buscar por título, autor ou tema, e o site mostra os resultados em ordem clara.
+          </p>
+          <p>
+            Cada registro recebe um pequeno resumo e etiquetas de tema. Isso ajuda você a ver rapidamente se o conteúdo interessa antes de abrir o documento.
+          </p>
+          <p>
+            Por trás disso, o site usa mineração de texto para ler os conteúdos e identificar palavras-chave e temas principais. Isso não é só um índice de títulos: o sistema busca trechos importantes e entende do que cada documento trata.
+          </p>
+          <p>
+            Uma API de IA também é usada para gerar resumos e sugerir etiquetas. Assim, quando você pesquisa, o sistema pode encontrar textos com termos parecidos, mesmo que não estejam exatamente iguais na busca.
+          </p>
+          <p>
+            O resultado é um acervo pesquisável com filtros por tags, listagem de texto e destaque de temas relevantes. É um jeito mais rápido de navegar entre documentos e achar o que interessa.
+          </p>
+        </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Sobre o gestor</h2>
+            <h2 className="text-2xl font-semibold mb-4">Quem organiza</h2>
             <p>
-              Prof. João Rafael Chió Serra Carvalho é articulista e doutorando em História Social da Cultura pela Universidade Federal de Minas Gerais (UFMG). Formado em História pela UFMG, concluiu mestrado em História Social pela Faculdade de Filosofia, Letras e Ciências Humanas da Universidade de São Paulo (USP/FFLCH).
+              Prof. João Rafael Chió Serra Carvalho é doutorando em História Social da Cultura pela Universidade Federal de Minas Gerais (UFMG). Formado em História pela UFMG, concluiu mestrado em História Social pela Universidade de São Paulo (USP/FFLCH).
             </p>
             <p>
-              Sua pesquisa faz interface entre história do marxismo, história da África e da Ásia, com foco em questões coloniais, anticoloniais e na obra de Frantz Fanon. Trabalha também com História Medieval, História Antiga e História das religiões.
+              Suas pesquisas envolvem história do marxismo, história da África e Ásia, colonialismo e obra de Frantz Fanon. Também trabalha com História Medieval, Antiga e religiões.
             </p>
             <p>
-              Os dados biográficos e acadêmicos aqui descritos foram consultados a partir do currículo Lattes em 20 de julho de 2026 para fornecer contexto sobre a autoria e a curadoria do conteúdo.
+              Os dados sobre o Prof. foram atualizados em 20 de julho de 2026 com base no seu currículo Lattes.
             </p>
           </section>
 
@@ -62,7 +62,7 @@ export default function SobrePage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">Informação relevante</h2>
             <p>
-              Este site não foi criado ou desenvolvido pelo Prof. João Rafael Chió Serra Carvalho. A responsabilidade técnica e de desenvolvimento é de @StatViva (Luca Santos). Para questões relacionadas a erros, segurança, dúvidas ou suporte técnico, escreva para <a href="mailto:hello.statviva@gmail.com" className="text-brown-700 hover:underline">hello.statviva@gmail.com</a>.
+              Este site não foi criado ou desenvolvido pelo Prof. João Rafael Chió Serra Carvalho. A responsabilidade técnica e de desenvolvimento é de @StatViva (Lucas Santos). Para questões relacionadas a erros, segurança, dúvidas ou suporte técnico, escreva para <a href="mailto:hello.statviva@gmail.com" className="text-brown-700 hover:underline">hello.statviva@gmail.com</a>.
             </p>
             <p>
               O Prof. João Carvalho responde apenas pelo conteúdo e pela curadoria científica disponibilizada na plataforma, enquanto a manutenção da infraestrutura e do processamento de dados é realizada pela equipe técnica responsável.
