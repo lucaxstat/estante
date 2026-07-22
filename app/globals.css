@@ -1,106 +1,6 @@
 @import "tailwindcss";
 
-/* Theme tokens */
-:root {
-  --bg: 255 245 230; /* warm paper tone */
-  --fg: 34 28 20; /* rich brown text */
-  --muted: 150 108 50; /* soft accent */
-  --burnt-50: 255 247 236;
-  --burnt-100: 255 240 223;
-  --burnt-500: 183 112 36;
-  --card-rgb: 255 251 244;
-  --glass: 255 251 244;
-  --shadow: 0 8px 25px rgba(34,28,20,0.08);
-}
-
-/* Base styles using tokens */
-html, body {
-  background-color: rgb(var(--bg));
-  color: rgb(var(--fg));
-  transition: background-color 200ms ease, color 200ms ease;
-}
-
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-/* Reusable components (cards, buttons, tags) */
-.card {
-  background-color: rgb(var(--card-rgb));
-  border-radius: 1rem;
-  box-shadow: var(--shadow);
-  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
-}
-.card:hover { transform: translateY(-4px); }
-
-.btn-primary {
-  background: linear-gradient(90deg, rgba(var(--burnt-500),1), rgba(240,200,150,1));
-  color: rgb(255,255,255);
-  padding: 0.6rem 1rem;
-  border-radius: 0.75rem;
-  transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease, background-color 120ms ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-.btn-primary:hover { transform: translateY(-2px); filter: saturate(1.05); }
-.btn-primary:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-danger { background: #b91c1c; color: white; padding: 0.5rem 0.8rem; border-radius: 0.6rem; transition: opacity 120ms ease; }
-.btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.input-field {
-  width: 100%;
-  padding: 0.95rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(34,28,20,0.12);
-  background: rgba(var(--card-rgb) / 0.98);
-  color: rgb(var(--fg));
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-}
-.input-field:focus {
-  outline: none;
-  border-color: rgba(var(--burnt-500), 0.85);
-  box-shadow: 0 0 0 6px rgba(var(--burnt-500), 0.12);
-  transform: translateY(-1px);
-}
-.input-field:disabled {
-  opacity: 0.75;
-  cursor: not-allowed;
-}
-
-.spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255,255,255,0.5);
-  border-top-color: white;
-  border-radius: 999px;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.tag {
-  display: inline-block;
-  padding: 0.18rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  background: rgba(245,238,226,0.9);
-  color: rgb(var(--burnt-500));
-}
-
-.glass {
-  background: rgba(var(--glass) / 0.85);
-  backdrop-filter: blur(6px) saturate(120%);
-}
-
+/* Toast animations (used by Toast component) */
 .toast-container {
   position: fixed;
   right: 1rem;
@@ -112,25 +12,18 @@ body {
 }
 .toast {
   min-width: 18rem;
-  background: rgba(var(--card-rgb) / 0.98);
-  color: rgb(var(--fg));
-  border: 1px solid rgba(var(--fg) / 0.16);
+  background: #fff;
+  color: #202122;
+  border: 1px solid #a2a9b1;
   padding: 1rem 1.2rem;
-  border-radius: 1rem;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(12px);
+  border-radius: 0.125rem;
   animation: slideIn 240ms ease;
 }
-.toast-success { border-left: 4px solid rgb(var(--burnt-500)); }
+.toast-success { border-left: 4px solid #3366cc; }
 .toast-error { border-left: 4px solid #b91c1c; }
-.toast-info { border-left: 4px solid rgb(var(--muted)); }
+.toast-info { border-left: 4px solid #54595d; }
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-* { color: rgb(var(--fg)); }
-
-*:focus { outline: 2px solid rgba(var(--muted), 0.18); outline-offset: 2px; }
-
